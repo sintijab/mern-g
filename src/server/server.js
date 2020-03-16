@@ -10,6 +10,8 @@ import { resolvers } from './resolvers';
 import { typeDefs } from './typeDefs';
 import config from '../../webpack.dev.config.js';
 
+require('dotenv').config();
+
 const server = async () => {
     const app = express();
     const compiler = webpack(config);
@@ -17,14 +19,15 @@ const server = async () => {
       publicPath: config.output.publicPath
     }))
     app.use(webpackHotMiddleware(compiler))
-    const port = 4001;
+    const port = process.env.PORT || 1234;
     const server = new ApolloServer({
         typeDefs,
         resolvers
     })
     server.applyMiddleware({app});
+
     try {
-      await mongoose.connect("mongodb+srv://admin:admin@cluster-32evw.gcp.mongodb.net/test?retryWrites=true&w=majority", {useNewUrlParser: true})
+      await mongoose.connect(process.env.DB_KEY, {useNewUrlParser: true})
     } catch(err) {
       console.log(err)
     }
